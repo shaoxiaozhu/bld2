@@ -1,0 +1,26 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+rootProject.name = "BloodPressure"
+include ':app'
+
+// Gradle 配置
+gradle.projectsLoaded {
+    rootProject.allprojects {
+        buildDir = "${rootDir}/gradle/build/${project.name}"
+    }
+} 

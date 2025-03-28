@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+def keystorePropertiesFile = rootProject.file("local.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     compileSdkVersion 33
     defaultConfig {
@@ -9,16 +13,64 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        
+        // ARM 模拟器优化
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
+        
+        // 开发优化
+        multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
+    }
+    
+    // 构建优化
+    dexOptions {
+        javaMaxHeapSize "2g"
+        preDexLibraries true
+        threadCount = 4
+    }
+    
+    // 编译优化
+    aaptOptions {
+        cruncherEnabled false
+    }
+    
+    signingConfigs {
+        debug {
+            storeFile file("../keystore/debug.keystore")
+            storePassword "android"
+            keyAlias "debugkey"
+            keyPassword "android"
+        }
     }
     buildTypes {
         release {
             minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+        debug {
+            debuggable true
+            signingConfig signingConfigs.debug
         }
     }
+    
+    // 编译优化
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    
+    // 资源优化
+    androidResources {
+        noCompress "xml", "json"
+    }
+    
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
     }
 }
 
